@@ -1,27 +1,18 @@
-# COMP-330-Team-B-Project-2
-This project is our attempt to add create a living map of Doyle Hall 
-which would allow professors to update their status in the building while 
-students would be able to view this information.
-
-It is a work-in-progress at this point. 
-An email sent by the professor would be processed by IFTTT and sent to adafruit io which the rapberry pi
-is pinging constantly to get updated information. Once a new email is sent, the process begins and the database is updated by the 
-Python scripts. The Python script then triggers DBMS to manipulate FloorLayout to edit and save an updated map with colored rectangles indicating
-the status of the professor with green as open, yellow as busy, and red as closed. The website front end is built with basic
-php and HTML. The HTML pulls the images and the php displays all professors in the database that are not out. 
-
-The only issue was setting up an email to work with IFTTT as it only work with David's own luc.edu email instead of a cs.luc.edu email.
-The project was also scaled back to have the rapberry pi hooked up to a monitor that could display this information at Doyle or through a website instead
-of the student being able to access it on their phone
-
-Programs and chief creators:
-
-Alex Chan-FloorLayout.java-in collaboration with Matt.     
-
-Matt McNeive-DBMS.java.
-
-David Gubala
-AFIOConnector.py,
-EmailReturn.py - in collaboration with Matt,
-SQLupdater.py, and
-Doyle Hall.sql
+# Overview
+  This project is the second assignment in my Software Development course. For this assignment, we were put into groups of 4 and given the task of creating an IoT device. After brainstorming, my group had come upon the idea of a "Smart Map" for our Computer Science Department's building. The initial idea was to give our professors a way to show students when they are available in their office. The map would be visible to students via a TV in the common/study area at the department's building or online on a website.
+  
+# Lifecycle (How it's supposed to be used)
+  When a professor comes in to their office, they can send an email which would then trigger a python script on the Raspberry Pi to update an SQL database and run the Java code to generate updated maps. Upon refreshing the website, the user would be presented with up to date maps of the first and second floor of the building as well as a table informing the user which professor is currently not out, and where you can find them
+  
+# How it works
+  To acheive a Smart Map we used a Raspberry Pi, Adafruit IO and IFTTT. IFTTT would be connected to some email address set by the department (in practice we used my personal outlook) and be used to scrape incomming emails. The data from these emails would be in the format:
+   SenderAddress : email@college.edu
+   Title (Status): IN
+   Body (Room Number): 206 
+  This data was then sent to Adafruit IO. On the Raspberry Pi device we had created an SQL database with professor information. Python scripts are used to constantly ping Adafuit IO for now email data. When new data comes in, the script updates the database with a professor's status and room number, and then triggers the Java program. The Java program takes the data from the database and pngs of the map. Based on the database information, the java program will put a colored square in each room signifying room status as out(red), busy(yellow), or in(green).
+  Presenting the data to the user is done using an apache webserver running on the Pi in addition with HTML and PHP to take data fromn the SQL database. The end product is a barebones website with a maps of the two floors on each side as well as a table in the middle containing Professor Name, Status and Room Number.
+  
+# Personal Responsibilities, Contribution and Project Reflection
+  Personally I was responsible for figuring out how to let professors update our smart map, as well as a way to present the map. These tasks ended up taking absurdly longer than I had anticipated, but I'm grateful at I had learned so much. 
+    I figured an easy way for professors to update their Map status would be to send an email, so I began to research how I would be able to acheive this. I came across IFTTT (If This Then That) which would be a good way for me to scrape incomming emails. The next step was to setup up Adafruit IO which IFTTT is able to send data to. I used this to send the Sender Address, Email Title and Email Body. The Raspberry Pi is capable of pulling data from Adafuit IO with a Python Script. After writing this script, I had to store this data on the Pi so I taught myself SQL and built a database with professor information including name, email, room number and status. I wrote a second python script used to update this SQL database as new emails came in.
+    As my team was working on a way to show the data from the database on the map.png files we had received, I now started my work on presenting all of our data to a future user. I decided the best way was to host a website on the Raspberry Pi. So, I set up an apache webserver and wrote some basic html to display the output of the Java program my teammates had worked on, which were two png files dipicting maps. The updated png's of the maps, however, only showed when and if a room was occupied or empty. In order for a better user experience, I had to figure out a way to present the SQL data to the user. I taught myself some basic PHP and created a table which showed the user which professor was not out of their office, and where you could find them.
